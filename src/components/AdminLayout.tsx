@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
+import { AdminLogin } from './admin/AdminLogin';
 import { AdminDashboard } from './admin/AdminDashboard';
 import { AdminOrders } from './admin/AdminOrders';
 import { AdminProducts } from './admin/AdminProducts';
@@ -17,12 +18,19 @@ import {
   Star,
   Settings,
   Code2,
-  ArrowLeft
+  ArrowLeft,
+  LogOut,
+  ShieldCheck
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
-  const { setActiveView, avaliacoes } = useStore();
+  const { setActiveView, avaliacoes, adminAutenticado, logoutAdmin } = useStore();
   const [tabAtiva, setTabAtiva] = useState<string>('dashboard');
+
+  // Se o admin não estiver autenticado com dujao / 30031936, exige o login
+  if (!adminAutenticado) {
+    return <AdminLogin />;
+  }
 
   const pendentesCount = avaliacoes.filter(a => a.status === 'pendente').length;
 
@@ -42,28 +50,46 @@ export const AdminLayout: React.FC = () => {
       
       {/* Sub-Header Administrativo */}
       <div className="bg-[#FFFFFF] border border-[#E8E2D9] rounded-2xl p-3 sm:p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setActiveView('catalogo')}
-            className="p-2 rounded-xl border border-[#E8E2D9] text-[#7E7267] hover:text-[#8C482A] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
-            title="Voltar para a Loja do Cliente"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#8C482A] bg-[#FAF0E6] px-2 py-0.5 rounded border border-[#E8D8C8]">
-                Painel da Confeitaria
-              </span>
-              <span className="text-xs text-[#7E7267]">v1.0.0</span>
+        <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setActiveView('catalogo')}
+              className="p-2 rounded-xl border border-[#E8E2D9] text-[#7E7267] hover:text-[#8C482A] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+              title="Voltar para a Loja do Cliente"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#8C482A] bg-[#FAF0E6] px-2 py-0.5 rounded border border-[#E8D8C8]">
+                  Painel da Confeitaria
+                </span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                  <span>dujao</span>
+                </span>
+              </div>
+              <h2 className="font-serif text-lg font-bold text-[#2D241E] mt-0.5">
+                Administração Casa de Bolos
+              </h2>
             </div>
-            <h2 className="font-serif text-lg font-bold text-[#2D241E] mt-0.5">
-              Administração Casa de Bolos
-            </h2>
           </div>
+
+          {/* Botão Sair do Admin */}
+          <button
+            onClick={() => {
+              logoutAdmin();
+              setActiveView('catalogo');
+            }}
+            className="md:hidden min-h-[38px] px-3 py-1.5 rounded-xl border border-red-200 text-red-700 bg-red-50 hover:bg-red-100 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Encerrar sessão de admin"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sair</span>
+          </button>
         </div>
 
-        {/* Abas de Navegação Admin (Mobile Friendly Horizontal Scroller) */}
+        {/* Abas de Navegação Admin & Botão Logout */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 -mx-1 px-1">
           {navItems.map(item => {
             const Icon = item.icon;
@@ -88,6 +114,18 @@ export const AdminLayout: React.FC = () => {
               </button>
             );
           })}
+
+          <button
+            onClick={() => {
+              logoutAdmin();
+              setActiveView('catalogo');
+            }}
+            className="hidden md:flex min-h-[44px] px-3.5 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap items-center gap-1.5 border border-red-200 text-red-700 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer shrink-0 ml-2"
+            title="Encerrar sessão de admin"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sair (dujao)</span>
+          </button>
         </div>
       </div>
 

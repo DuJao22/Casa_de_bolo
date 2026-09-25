@@ -15,19 +15,11 @@ export const ClientDelivery: React.FC = () => {
     setActiveView
   } = useStore();
 
-  const [rua, setRua] = useState(clienteAtual?.endereco || 'Rua das Flores');
-  const [numero, setNumero] = useState(clienteAtual?.numero || '450');
-  const [complemento, setComplemento] = useState(clienteAtual?.complemento || 'Apto 32');
-  const [bairro, setBairro] = useState(clienteAtual?.bairro || 'Jardins');
-  const [cidade, setCidade] = useState(clienteAtual?.cidade || 'São Paulo');
-
-  const preencherEnderecoAutomatico = () => {
-    setRua('Rua das Flores');
-    setNumero('450');
-    setComplemento('Apto 32');
-    setBairro('Jardins');
-    setCidade('São Paulo');
-  };
+  const [rua, setRua] = useState(clienteAtual?.endereco || '');
+  const [numero, setNumero] = useState(clienteAtual?.numero || '');
+  const [complemento, setComplemento] = useState(clienteAtual?.complemento || '');
+  const [bairro, setBairro] = useState(clienteAtual?.bairro || '');
+  const [cidade, setCidade] = useState(clienteAtual?.cidade || '');
 
   useEffect(() => {
     if (tipoEntrega === 'retirada') {
@@ -156,18 +148,9 @@ export const ClientDelivery: React.FC = () => {
         {tipoEntrega === 'entrega' && (
           <div className="bg-[#FFFFFF] border border-[#E8E2D9] rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm animate-fadeIn">
             
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#8C482A]">
-                <MapPin className="w-4 h-4" />
-                <span>Endereço para Entrega</span>
-              </div>
-              <button
-                type="button"
-                onClick={preencherEnderecoAutomatico}
-                className="text-[11px] font-semibold text-[#8C482A] bg-[#FAF0E6] hover:bg-[#8C482A] hover:text-white px-2.5 py-1 rounded-lg border border-[#E8D8C8] transition-colors cursor-pointer"
-              >
-                ⚡ Preenchimento Automático
-              </button>
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#8C482A]">
+              <MapPin className="w-4 h-4" />
+              <span>Endereço para Entrega</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3">

@@ -3,8 +3,8 @@ import { useStore } from '../context/StoreContext';
 import { Phone, UserPlus, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ClientIdentification: React.FC = () => {
-  const { identificarPorTelefone, setActiveView } = useStore();
-  const [telefone, setTelefone] = useState('(11) 98765-1111');
+  const { identificarPorTelefone, setActiveView, carrinho } = useStore();
+  const [telefone, setTelefone] = useState('');
   const [mensagemEncontrado, setMensagemEncontrado] = useState<string | null>(null);
   const [naoEncontrado, setNaoEncontrado] = useState(false);
   const [opcaoInicial, setOpcaoInicial] = useState<'pergunta' | 'busca'>('pergunta');
@@ -24,19 +24,6 @@ export const ClientIdentification: React.FC = () => {
     return '';
   };
 
-  const handlePreencherAutomatico = () => {
-    const tel = '(11) 98765-1111';
-    setTelefone(tel);
-    const cliente = identificarPorTelefone(tel);
-    if (cliente) {
-      setMensagemEncontrado(`Olá, ${cliente.nome}! 🍰 Preenchimento automático ativado.`);
-      setNaoEncontrado(false);
-      setTimeout(() => {
-        setActiveView('catalogo');
-      }, 700);
-    }
-  };
-
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTelefone(formatPhone(e.target.value));
     setMensagemEncontrado(null);
@@ -52,8 +39,12 @@ export const ClientIdentification: React.FC = () => {
       setMensagemEncontrado(`Olá, ${cliente.nome}! 👋 Que bom ter você de volta.`);
       setNaoEncontrado(false);
       setTimeout(() => {
-        setActiveView('catalogo');
-      }, 1200);
+        if (carrinho.length > 0) {
+          setActiveView('entrega');
+        } else {
+          setActiveView('catalogo');
+        }
+      }, 1000);
     } else {
       setNaoEncontrado(true);
       setMensagemEncontrado(null);
@@ -72,32 +63,11 @@ export const ClientIdentification: React.FC = () => {
 
             <div>
               <h1 className="font-serif text-2xl font-bold text-[#2D241E]">
-                Vamos começar seu pedido
+                Identificação do Cliente
               </h1>
               <p className="text-sm text-[#7E7267] mt-1.5">
-                Você já fez pedidos conosco anteriormente?
+                Você já fez pedidos conosco ou possui cadastro?
               </p>
-            </div>
-
-            {/* Botão de Preenchimento Automático Rápido */}
-            <div className="bg-[#FAF0E6] border border-[#E8D8C8] rounded-xl p-3 text-left">
-              <div className="flex items-center justify-between gap-2">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#8C482A] tracking-wider block">
-                    ⚡ Preenchimento Automático
-                  </span>
-                  <p className="text-xs text-[#2D241E] font-semibold mt-0.5">
-                    João da Silva · (11) 98765-1111
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handlePreencherAutomatico}
-                  className="px-3 py-1.5 bg-[#8C482A] hover:bg-[#73371D] text-white rounded-lg text-xs font-bold shrink-0 transition-transform active:scale-95 cursor-pointer"
-                >
-                  Entrar Direto →
-                </button>
-              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-1">
@@ -107,7 +77,7 @@ export const ClientIdentification: React.FC = () => {
                 className="p-4 rounded-xl border-2 border-[#8C482A] bg-[#FAF0E6] text-[#8C482A] font-semibold text-sm hover:bg-[#8C482A] hover:text-white transition-all text-center flex flex-col items-center justify-center gap-1 cursor-pointer"
               >
                 <span className="text-lg font-bold">SIM</span>
-                <span className="text-xs opacity-80">Já sou cliente</span>
+                <span className="text-xs opacity-80">Fazer login</span>
               </button>
 
               <button
@@ -116,7 +86,7 @@ export const ClientIdentification: React.FC = () => {
                 className="p-4 rounded-xl border border-[#E8E2D9] bg-[#FAF7F2] text-[#2D241E] font-semibold text-sm hover:border-[#8C482A] transition-all text-center flex flex-col items-center justify-center gap-1 cursor-pointer"
               >
                 <span className="text-lg font-bold">NÃO</span>
-                <span className="text-xs text-[#7E7267]">Primeiro pedido</span>
+                <span className="text-xs text-[#7E7267]">Criar cadastro</span>
               </button>
             </div>
 
@@ -126,7 +96,7 @@ export const ClientIdentification: React.FC = () => {
                 onClick={() => setActiveView('catalogo')}
                 className="text-xs font-semibold text-[#7E7267] hover:text-[#8C482A] underline"
               >
-                Apenas olhar o cardápio sem entrar
+                Ver cardápio primeiro
               </button>
             </div>
           </div>
@@ -142,10 +112,10 @@ export const ClientIdentification: React.FC = () => {
                 ← Voltar
               </button>
               <h1 className="font-serif text-2xl font-bold text-[#2D241E]">
-                Identifique seu cadastro
+                Entrar com Telefone
               </h1>
               <p className="text-xs sm:text-sm text-[#7E7267]">
-                Informe o número de WhatsApp cadastrado na loja.
+                Informe o número de WhatsApp ou telefone cadastrado na loja.
               </p>
             </div>
 
@@ -163,9 +133,9 @@ export const ClientIdentification: React.FC = () => {
                 <div className="flex items-start gap-2.5">
                   <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold">Parece que é seu primeiro pedido por aqui.</p>
+                    <p className="font-semibold">Telefone não localizado.</p>
                     <p className="text-amber-800 text-xs mt-0.5">
-                      Não localizamos este telefone. Vamos fazer seu cadastro rapidinho!
+                      Não encontramos um cadastro com este número. Deseja criar sua conta agora?
                     </p>
                   </div>
                 </div>
@@ -200,7 +170,7 @@ export const ClientIdentification: React.FC = () => {
                 />
               </div>
               <p className="text-[11px] text-[#7E7267] mt-1.5">
-                Exemplo: (11) 98765-1111 (Cliente de teste)
+                Informe o DDD e os 9 dígitos do seu número
               </p>
             </div>
 
@@ -209,7 +179,7 @@ export const ClientIdentification: React.FC = () => {
               disabled={telefone.length < 10}
               className="w-full min-h-[48px] py-3.5 bg-[#8C482A] hover:bg-[#73371D] disabled:opacity-50 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-98 cursor-pointer"
             >
-              <span>Continuar</span>
+              <span>Acessar minha conta</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 

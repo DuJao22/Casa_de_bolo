@@ -3,24 +3,14 @@ import { useStore } from '../context/StoreContext';
 import { User, Phone, MapPin, ArrowRight } from 'lucide-react';
 
 export const ClientRegistration: React.FC = () => {
-  const { cadastrarCliente, setActiveView } = useStore();
-  const [nome, setNome] = useState('João da Silva');
-  const [telefone, setTelefone] = useState('(11) 98765-1111');
-  const [endereco, setEndereco] = useState('Rua das Flores');
-  const [numero, setNumero] = useState('450');
-  const [complemento, setComplemento] = useState('Apto 32');
-  const [bairro, setBairro] = useState('Jardins');
-  const [cidade, setCidade] = useState('São Paulo');
-
-  const preencherDadosExemplo = () => {
-    setNome('João da Silva');
-    setTelefone('(11) 98765-1111');
-    setEndereco('Rua das Flores');
-    setNumero('450');
-    setComplemento('Apto 32');
-    setBairro('Jardins');
-    setCidade('São Paulo');
-  };
+  const { cadastrarCliente, setActiveView, carrinho } = useStore();
+  const [nome, setNome] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [endereco, setEndereco] = useState('');
+  const [numero, setNumero] = useState('');
+  const [complemento, setComplemento] = useState('');
+  const [bairro, setBairro] = useState('');
+  const [cidade, setCidade] = useState('');
 
   // Máscara brasileira de telefone
   const formatPhone = (val: string) => {
@@ -51,7 +41,11 @@ export const ClientRegistration: React.FC = () => {
       cidade
     });
 
-    setActiveView('catalogo');
+    if (carrinho.length > 0) {
+      setActiveView('entrega');
+    } else {
+      setActiveView('catalogo');
+    }
   };
 
   return (
@@ -61,30 +55,11 @@ export const ClientRegistration: React.FC = () => {
         <div className="text-center space-y-1.5">
           <span className="text-3xl block">👋</span>
           <h1 className="font-serif text-2xl font-bold text-[#2D241E]">
-            Cadastro Rápido
+            Cadastro de Cliente
           </h1>
           <p className="text-xs sm:text-sm text-[#7E7267]">
-            Leva menos de 1 minuto. Sem necessidade de criar senhas complicadas.
+            Cadastre-se rapidamente para fazer seus pedidos na confeitaria.
           </p>
-        </div>
-
-        {/* Botão de Preenchimento Automático */}
-        <div className="bg-[#FAF0E6] border border-[#E8D8C8] rounded-xl p-3 flex items-center justify-between gap-2">
-          <div>
-            <span className="text-[10px] uppercase font-bold text-[#8C482A] tracking-wider block">
-              ⚡ Preenchimento Automático
-            </span>
-            <p className="text-xs text-[#2D241E] font-medium">
-              Campos pré-preenchidos com dados de teste
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={preencherDadosExemplo}
-            className="px-3 py-1.5 bg-[#8C482A] hover:bg-[#73371D] text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer"
-          >
-            Preencher Dados
-          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

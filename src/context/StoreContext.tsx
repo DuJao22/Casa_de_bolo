@@ -95,13 +95,41 @@ interface StoreContextType {
   setToastAtual: (notif: Notificacao | null) => void;
   marcarNotificacaoLida: (id: number) => void;
   limparNotificacoes: () => void;
-  // Preenchimento Automático
-  preencherTudoAutomatico: () => void;
+  // Autenticação Admin (dujao / 30031936)
+  adminAutenticado: boolean;
+  loginAdmin: (usuario: string, senha: string) => boolean;
+  logoutAdmin: () => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Limpeza preventiva de dados de teste antigos armazenados em versões anteriores
+  if (typeof window !== 'undefined' && localStorage.getItem('cdb_autofill_cleaned') !== 'v3') {
+    localStorage.removeItem('cdb_cliente_atual');
+    localStorage.removeItem('cdb_carrinho');
+    localStorage.setItem('cdb_autofill_cleaned', 'v3');
+  }
+
+  // Autenticação do Administrador (dujao / 30031936)
+  const [adminAutenticado, setAdminAutenticado] = useState<boolean>(() => {
+    return localStorage.getItem('cdb_admin_auth') === 'true';
+  });
+
+  const loginAdmin = (usuario: string, senha: string): boolean => {
+    if (usuario.trim().toLowerCase() === 'dujao' && senha === '30031936') {
+      setAdminAutenticado(true);
+      localStorage.setItem('cdb_admin_auth', 'true');
+      return true;
+    }
+    return false;
+  };
+
+  const logoutAdmin = () => {
+    setAdminAutenticado(false);
+    localStorage.removeItem('cdb_admin_auth');
+  };
+
   // Config
   const [config, setConfig] = useState<LojaConfig>(() => {
     const saved = localStorage.getItem('cdb_config');
@@ -160,22 +188,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return INITIAL_CUSTOMERS;
   });
 
-  // Cliente Atual na sessão com auto-preenchimento inicial para Render
+  // Cliente Atual na sessão (sem preenchimento automático, usuário deve logar ou cadastrar)
   const [clienteAtual, setClienteAtual] = useState<Cliente | null>(() => {
     const saved = localStorage.getItem('cdb_cliente_atual');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.nome) return parsed;
+        if (parsed && parsed.nome && parsed.telefone) return parsed;
       } catch {
         // fallback
       }
     }
-    // Preenchimento automático com cliente de demonstração
-    return INITIAL_CUSTOMERS[0];
+    return null;
   });
 
-  // Carrinho com auto-preenchimento inicial e sanitização contra dados corrompidos
+  // Carrinho de compras (inicia vazio, sem produtos automáticos)
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>(() => {
     const saved = localStorage.getItem('cdb_carrinho');
     if (saved) {
@@ -202,27 +229,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // fallback
       }
     }
-    // Preenchimento automático inicial com itens da confeitaria
-    return [
-      {
-        produto_id: INITIAL_PRODUCTS[0].id,
-        nome: INITIAL_PRODUCTS[0].nome,
-        preco_unitario: INITIAL_PRODUCTS[0].preco,
-        quantidade: 1,
-        subtotal: INITIAL_PRODUCTS[0].preco,
-        imagem: INITIAL_PRODUCTS[0].imagem,
-        observacao: 'Massa macia e calda de brigadeiro quentinha'
-      },
-      {
-        produto_id: INITIAL_PRODUCTS[5].id,
-        nome: INITIAL_PRODUCTS[5].nome,
-        preco_unitario: INITIAL_PRODUCTS[5].preco,
-        quantidade: 1,
-        subtotal: INITIAL_PRODUCTS[5].preco,
-        imagem: INITIAL_PRODUCTS[5].imagem,
-        observacao: 'Sortidos artesanais'
-      }
-    ];
+    return [];
   });
 
   // Pedidos
@@ -713,35 +720,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setNotificacoes([]);
   };
 
-  const preencherTudoAutomatico = () => {
-    const clientePadrao = INITIAL_CUSTOMERS[0];
-    setClienteAtual(clientePadrao);
-    setTipoEntrega('entrega');
-    setEnderecoEntrega('Rua das Flores, 450 (Apto 32) - Jardins, São Paulo');
-    setCarrinho([
-      {
-        produto_id: INITIAL_PRODUCTS[0].id,
-        nome: INITIAL_PRODUCTS[0].nome,
-        preco_unitario: INITIAL_PRODUCTS[0].preco,
-        quantidade: 1,
-        subtotal: INITIAL_PRODUCTS[0].preco,
-        imagem: INITIAL_PRODUCTS[0].imagem,
-        observacao: 'Massa macia e calda de brigadeiro quentinha'
-      },
-      {
-        produto_id: INITIAL_PRODUCTS[5].id,
-        nome: INITIAL_PRODUCTS[5].nome,
-        preco_unitario: INITIAL_PRODUCTS[5].preco,
-        quantidade: 1,
-        subtotal: INITIAL_PRODUCTS[5].preco,
-        imagem: INITIAL_PRODUCTS[5].imagem,
-        observacao: 'Sortidos artesanais'
-      }
-    ]);
-    const ultimo = pedidos.length > 0 ? pedidos[0] : INITIAL_ORDERS[0];
-    setUltimoPedidoCriado(ultimo);
-  };
-
   return (
     <StoreContext.Provider
       value={{
@@ -794,8 +772,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setToastAtual,
         marcarNotificacaoLida,
         limparNotificacoes,
-        // Preenchimento Automático
-        preencherTudoAutomatico
+        // Autenticação Admin (dujao / 30031936)
+        adminAutenticado,
+        loginAdmin,
+        logoutAdmin
       }}
     >
       {children}

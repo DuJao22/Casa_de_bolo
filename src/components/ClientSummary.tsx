@@ -14,7 +14,7 @@ export const ClientSummary: React.FC = () => {
     setActiveView
   } = useStore();
 
-  const [observacaoPedido, setObservacaoPedido] = useState('Favor enviar bem embalado com laço comemorativo e pratinhos descartáveis.');
+  const [observacaoPedido, setObservacaoPedido] = useState('');
   const [carregando, setCarregando] = useState(false);
 
   const subtotal = carrinho.reduce((sum, item) => sum + (Number(item?.subtotal) || (Number(item?.preco_unitario || 0) * Number(item?.quantidade || 1)) || 0), 0);
