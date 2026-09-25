@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 680px; margin: 40px auto 60px auto; text-align: center;">
+  <span style="font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 600; display: block; margin-bottom: 12px;">
+    Confeitaria Artesanal
+  </span>
+  
+  <h1 style="font-size: 2.5rem; line-height: 1.15; margin-bottom: 16px; color: var(--text);">
+    Casa de Bolos
+  </h1>
+  
+  <p style="font-size: 1.15rem; color: var(--muted); margin-bottom: 32px; max-width: 520px; margin-left: auto; margin-right: auto;">
+    Bolos feitos com carinho para deixar seu dia mais especial. Receitas tradicionais, massa fofinha e coberturas generosas.
+  </p>
+
+  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: 0 auto;">
+    {% if session.get('cliente_id') %}
+      <a href="{{ url_for('catalogo.listar') }}" class="btn btn-primary" style="font-size: 1.05rem; padding: 16px 24px;">
+        Continuar meu pedido →
+      </a>
+    {% else %}
+      <a href="{{ url_for('cliente.identificacao') }}" class="btn btn-primary" style="font-size: 1.05rem; padding: 16px 24px;">
+        Fazer meu pedido
+      </a>
+    {% endif %}
+
+    <a href="{{ url_for('catalogo.listar') }}" class="btn btn-outline" style="font-size: 0.95rem;">
+      Ver cardápio completo
+    </a>
+  </div>
+
+  <div style="margin-top: 50px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; text-align: left;">
+    <div>
+      <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 4px;">🧁 Massa Fresquinha</h3>
+      <p style="font-size: 0.85rem; color: var(--muted);">Assados todos os dias com ingredientes de verdade.</p>
+    </div>
+    <div>
+      <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 4px;">⚡ Atendimento Rápido</h3>
+      <p style="font-size: 0.85rem; color: var(--muted);">Retire quentinho ou receba com agilidade no conforto de casa.</p>
+    </div>
+    <div>
+      <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 4px;">🤍 Amor em Cada Detalhe</h3>
+      <p style="font-size: 0.85rem; color: var(--muted);">Desde a calda de chocolate ao brigadeiro puxa-puxa.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

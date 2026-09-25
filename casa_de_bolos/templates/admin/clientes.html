@@ -1,0 +1,69 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Clientes Cadastrados - Casa de Bolos Admin{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 1.6rem; margin-bottom: 4px;">Clientes Cadastrados</h1>
+  <p style="color: var(--muted); font-size: 0.9rem;">
+    Base de clientes que utilizam o atendimento online da confeitaria.
+  </p>
+</div>
+
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>Endereço Cadastrado</th>
+          <th>Total de Pedidos</th>
+          <th>Total Comprado</th>
+          <th>Último Pedido</th>
+          <th style="text-align: right;">Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in clientes %}
+          <tr>
+            <td>
+              <strong style="color: var(--text);">{{ c.nome }}</strong>
+            </td>
+            <td style="font-variant-numeric: tabular-nums;">
+              📞 {{ c.telefone }}
+            </td>
+            <td style="font-size: 0.85rem; color: var(--muted);">
+              {% if c.endereco %}
+                {{ c.endereco }}, {{ c.numero }} - {{ c.bairro }}
+              {% else %}
+                <span style="font-style: italic;">Não informado</span>
+              {% endif %}
+            </td>
+            <td>
+              <strong>{{ c.total_pedidos }}</strong> pedido(s)
+            </td>
+            <td style="font-weight: 700; color: var(--primary);">
+              {{ c.total_gasto|moeda }}
+            </td>
+            <td style="font-size: 0.82rem; color: var(--muted);">
+              {{ c.ultimo_pedido if c.ultimo_pedido else 'Nenhum' }}
+            </td>
+            <td style="text-align: right;">
+              <a href="{{ url_for('admin.cliente_detalhe', cliente_id=c.id) }}" class="btn btn-outline btn-sm">
+                Histórico
+              </a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">
+              Nenhum cliente cadastrado ainda.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

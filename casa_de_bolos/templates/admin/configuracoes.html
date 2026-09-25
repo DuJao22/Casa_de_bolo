@@ -1,0 +1,50 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Configurações da Loja - Casa de Bolos Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+  <div style="margin-bottom: 24px;">
+    <h1 style="font-size: 1.6rem; margin-bottom: 4px;">Configurações da Confeitaria</h1>
+    <p style="color: var(--muted); font-size: 0.9rem;">
+      Ajuste a taxa de entrega e dados operacionais de atendimento.
+    </p>
+  </div>
+
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm);">
+    <form method="POST">
+      <div class="form-group">
+        <label class="form-label" for="taxa_entrega">Taxa Padrão de Entrega (R$) *</label>
+        <input type="number" step="0.50" min="0" id="taxa_entrega" name="taxa_entrega" class="form-control" value="{{ configs.get('taxa_entrega', '7.50') }}" required>
+        <small style="color: var(--muted); font-size: 0.8rem; display: block; margin-top: 4px;">
+          Valor cobrado automaticamente quando o cliente seleciona a opção "Receber em casa".
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="nome_loja">Nome Comercial da Loja</label>
+        <input type="text" id="nome_loja" name="nome_loja" class="form-control" value="{{ configs.get('nome_loja', 'Casa de Bolos') }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="telefone_loja">Telefone / WhatsApp Comercial</label>
+        <input type="text" id="telefone_loja" name="telefone_loja" class="form-control js-phone-mask" value="{{ configs.get('telefone_loja', '(11) 98765-4321') }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="endereco_loja">Endereço Físico (Ponto de Retirada)</label>
+        <input type="text" id="endereco_loja" name="endereco_loja" class="form-control" value="{{ configs.get('endereco_loja', 'Rua das Confeitarias, 120 - Centro') }}" required>
+        <small style="color: var(--muted); font-size: 0.8rem; display: block; margin-top: 4px;">
+          Exibido para os clientes que escolhem "Retirar na loja".
+        </small>
+      </div>
+
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end;">
+        <button type="submit" class="btn btn-primary">
+          Salvar Configurações
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

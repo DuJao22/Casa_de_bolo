@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastro Rápido - Casa de Bolos{% endblock %}
+
+{% block content %}
+<div style="max-width: 480px; margin: 30px auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px 24px; box-shadow: var(--shadow-sm);">
+  
+  <div style="text-align: center; margin-bottom: 24px;">
+    <span style="font-size: 2rem; display: block; margin-bottom: 8px;">👋</span>
+    <h1 style="font-size: 1.5rem; margin-bottom: 6px;">Primeiro pedido por aqui?</h1>
+    <p style="font-size: 0.9rem; color: var(--muted);">
+      Vamos fazer seu cadastro rapidinho em menos de 1 minuto.
+    </p>
+  </div>
+
+  <form method="POST" action="{{ url_for('cliente.cadastro') }}">
+    <div class="form-group">
+      <label class="form-label" for="nome">Seu Nome Completo *</label>
+      <input type="text" 
+             id="nome" 
+             name="nome" 
+             class="form-control" 
+             placeholder="Ex: João da Silva" 
+             required 
+             autofocus>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="telefone">Telefone / WhatsApp *</label>
+      <input type="tel" 
+             id="telefone" 
+             name="telefone" 
+             class="form-control js-phone-mask" 
+             placeholder="(11) 98765-4321" 
+             value="{{ telefone or '' }}" 
+             required>
+    </div>
+
+    <div style="margin: 20px 0 12px 0; border-top: 1px dashed var(--border); padding-top: 16px;">
+      <p style="font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 4px;">
+        Endereço Padrão (Opcional)
+      </p>
+      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 14px;">
+        Você também poderá preencher ou alterar se optar por entrega.
+      </p>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label class="form-label" for="endereco">Rua / Avenida</label>
+          <input type="text" id="endereco" name="endereco" class="form-control" placeholder="Ex: Av. Paulista">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="numero">Número</label>
+          <input type="text" id="numero" name="numero" class="form-control" placeholder="100">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="complemento">Complemento (Apto, Bloco)</label>
+        <input type="text" id="complemento" name="complemento" class="form-control" placeholder="Apto 42">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label class="form-label" for="bairro">Bairro</label>
+          <input type="text" id="bairro" name="bairro" class="form-control" placeholder="Bela Vista">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cidade">Cidade</label>
+          <input type="text" id="cidade" name="cidade" class="form-control" placeholder="São Paulo">
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block" style="padding: 14px; font-size: 1rem; margin-top: 10px;">
+      Criar cadastro e ver cardápio →
+    </button>
+  </form>
+</div>
+{% endblock %}

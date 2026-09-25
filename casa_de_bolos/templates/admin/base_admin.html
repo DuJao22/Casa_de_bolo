@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>{% block title %}Painel Administrativo - Casa de Bolos{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .admin-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 8px 0;
+    }
+    .admin-nav::-webkit-scrollbar { display: none; }
+    .admin-nav-item {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+    }
+    .admin-nav-item:hover, .admin-nav-item.active {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+    .badge-status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .status-NOVO { background: #E3F2FD; color: #1565C0; }
+    .status-CONFIRMADO { background: #FFF9C4; color: #F57F17; }
+    .status-EM-PREPARO { background: #FFF3E0; color: #E65100; }
+    .status-PRONTO, .status-PRONTO-PARA-RETIRADA { background: #E8F5E9; color: #2E7D32; }
+    .status-SAIU-PARA-ENTREGA { background: #EDE7F6; color: #512DA8; }
+    .status-ENTREGUE, .status-RETIRADO { background: #E0F2F1; color: #00695C; }
+    .status-CANCELADO { background: #FFEBEE; color: #C62828; }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    .data-table th {
+      padding: 12px 14px;
+      background: var(--surface-alt);
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .data-table tr:hover td {
+      background: #FAF8F5;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body style="background: #F9F6F0;">
+  
+  <!-- Header Admin -->
+  <header style="background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 40;">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between; height: 60px;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <a href="{{ url_for('admin.dashboard') }}" style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--primary);">
+          CASA DE BOLOS
+        </a>
+        <span style="font-size: 0.75rem; background: var(--surface-alt); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; color: var(--muted); font-weight: 600;">
+          ADMIN
+        </span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="{{ url_for('cliente.index') }}" target="_blank" class="btn btn-outline btn-sm">
+          Ver Loja ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Navegação Secundária do Admin -->
+    <div style="background: var(--surface); border-top: 1px solid #F0EAE2;">
+      <div class="container admin-nav">
+        <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-item">Dashboard</a>
+        <a href="{{ url_for('admin.pedidos') }}" class="admin-nav-item">Pedidos</a>
+        <a href="{{ url_for('admin.produtos') }}" class="admin-nav-item">Produtos</a>
+        <a href="{{ url_for('admin.categorias') }}" class="admin-nav-item">Categorias</a>
+        <a href="{{ url_for('admin.clientes') }}" class="admin-nav-item">Clientes</a>
+        <a href="{{ url_for('admin.configuracoes') }}" class="admin-nav-item">Configurações</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: 24px; padding-bottom: 60px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="margin-bottom: 20px;">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

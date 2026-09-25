@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>{% block title %}Casa de Bolos - Atendimento e Pedidos{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="{{ url_for('cliente.index') }}" class="brand-link">
+        CASA DE BOLOS
+      </a>
+
+      <div class="header-actions">
+        {% if session.get('cliente_id') %}
+          <span style="font-size: 0.85rem; color: var(--muted); display: none; @media(min-width:600px){display:inline;}">
+            Olá, <strong>{{ session.get('cliente_nome', 'Cliente').split()[0] }}</strong>
+          </span>
+          <a href="{{ url_for('cliente.logout') }}" style="font-size: 0.82rem; color: var(--muted); text-decoration: underline;">Trocar</a>
+        {% else %}
+          <a href="{{ url_for('cliente.identificacao') }}" class="btn btn-outline btn-sm">Entrar</a>
+        {% endif %}
+
+        <a href="{{ url_for('pedido.ver_carrinho') }}" class="btn btn-primary btn-sm" style="position: relative;">
+          🛒 Carrinho
+          {% set carrinho = session.get('carrinho', []) %}
+          {% if carrinho %}
+            <span style="background:#FFFFFF; color:var(--primary); font-size: 0.75rem; font-weight:700; border-radius:9999px; padding:2px 6px; margin-left:4px;">
+              {{ carrinho|length }}
+            </span>
+          {% endif %}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: 20px; padding-bottom: 60px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="margin-bottom: 20px;">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer style="background: var(--surface); border-top: 1px solid var(--border); padding: 24px 0; text-align: center; font-size: 0.85rem; color: var(--muted);">
+    <div class="container">
+      <p style="font-family: var(--font-serif); font-size: 1.1rem; color: var(--text); margin-bottom: 6px;">Casa de Bolos</p>
+      <p style="margin-bottom: 8px;">Bolos artesanais feitos diariamente com ingredientes frescos e selecionados.</p>
+      <p style="font-size: 0.8rem;">Atendimento: {{ loja_telefone }} · {{ loja_endereco }}</p>
+      <div style="margin-top: 14px;">
+        <a href="{{ url_for('admin.dashboard') }}" style="color: var(--primary); text-decoration: underline; font-weight: 500;">
+          Acessar Painel da Confeitaria (/admin)
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

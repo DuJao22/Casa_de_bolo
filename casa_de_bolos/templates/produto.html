@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ produto.nome }} - Casa de Bolos{% endblock %}
+
+{% block content %}
+<div style="max-width: 620px; margin: 10px auto 40px auto;">
+  <a href="{{ url_for('catalogo.listar') }}" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); margin-bottom: 16px;">
+    ← Voltar ao cardápio
+  </a>
+
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+    
+    <div style="position: relative; aspect-ratio: 16/10; background: var(--surface-alt); overflow: hidden;">
+      <img src="{{ produto.imagem or url_for('static', filename='uploads/bolo_placeholder.jpg') }}" 
+           alt="{{ produto.nome }}" 
+           style="width: 100%; height: 100%; object-fit: cover;"
+           onerror="this.src='/static/uploads/bolo_placeholder.jpg';">
+    </div>
+
+    <form method="POST" action="{{ url_for('pedido.adicionar_item') }}" style="padding: 24px;">
+      <input type="hidden" name="produto_id" value="{{ produto.id }}">
+
+      <div style="margin-bottom: 16px;">
+        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--accent); font-weight: 600;">
+          {{ produto.categoria_nome }}
+        </span>
+        <h1 style="font-size: 1.6rem; margin-top: 4px; margin-bottom: 8px;">{{ produto.nome }}</h1>
+        <p style="font-size: 0.95rem; color: var(--muted); line-height: 1.6;">
+          {{ produto.descricao }}
+        </p>
+      </div>
+
+      <div style="padding: 16px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-size: 0.95rem; font-weight: 600; color: var(--muted);">Preço unitário:</span>
+        <span style="font-size: 1.4rem; font-weight: 700; color: var(--primary);">
+          {{ produto.preco|moeda }}
+        </span>
+      </div>
+
+      <!-- Seletor de Quantidade -->
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label class="form-label">Quantidade</label>
+        <div class="js-qty-stepper" style="display: flex; align-items: center; gap: 8px; max-width: 160px;">
+          <button type="button" class="btn btn-outline js-qty-minus" style="width: 44px; height: 44px; padding: 0; font-size: 1.2rem;">-</button>
+          <input type="number" 
+                 name="quantidade" 
+                 value="1" 
+                 min="1" 
+                 max="50" 
+                 class="form-control" 
+                 style="text-align: center; font-size: 1.1rem; font-weight: 700; height: 44px;" 
+                 readonly>
+          <button type="button" class="btn btn-outline js-qty-plus" style="width: 44px; height: 44px; padding: 0; font-size: 1.2rem;">+</button>
+        </div>
+      </div>
+
+      <!-- Observação opcional -->
+      <div class="form-group" style="margin-bottom: 24px;">
+        <label class="form-label" for="observacao">
+          Alguma observação para este item? (opcional)
+        </label>
+        <textarea name="observacao" 
+                  id="observacao" 
+                  rows="2" 
+                  class="form-control" 
+                  placeholder="Ex: Mandar com vela de aniversário, embalagem para presente, etc."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" style="padding: 16px; font-size: 1.05rem;">
+        Adicionar ao pedido 🛍️
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Produtos - Casa de Bolos Admin{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+  <div>
+    <h1 style="font-size: 1.6rem; margin-bottom: 4px;">Cardápio de Produtos</h1>
+    <p style="color: var(--muted); font-size: 0.9rem;">
+      Gerencie os bolos, doces e combos oferecidos no cardápio online.
+    </p>
+  </div>
+
+  <a href="{{ url_for('admin.produto_novo') }}" class="btn btn-primary">
+    + Cadastrar Novo Bolo / Produto
+  </a>
+</div>
+
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Categoria</th>
+          <th>Preço</th>
+          <th>Destaque</th>
+          <th>Status</th>
+          <th style="text-align: right;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for prod in produtos %}
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); overflow: hidden; background: var(--surface-alt); flex-shrink: 0;">
+                  <img src="{{ prod.imagem or url_for('static', filename='uploads/bolo_placeholder.jpg') }}" 
+                       alt="{{ prod.nome }}" 
+                       style="width: 100%; height: 100%; object-fit: cover;"
+                       onerror="this.src='/static/uploads/bolo_placeholder.jpg';">
+                </div>
+                <div>
+                  <strong style="color: var(--text);">{{ prod.nome }}</strong>
+                  <p style="font-size: 0.8rem; color: var(--muted); max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ prod.descricao }}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span style="font-size: 0.85rem; font-weight: 500;">{{ prod.categoria_nome }}</span>
+            </td>
+            <td style="font-weight: 700; color: var(--primary);">
+              {{ prod.preco|moeda }}
+            </td>
+            <td>
+              {% if prod.destaque %}
+                <span style="color: #F57F17; font-weight: 600; font-size: 0.85rem;">⭐ Sim</span>
+              {% else %}
+                <span style="color: var(--muted); font-size: 0.85rem;">Não</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if prod.ativo %}
+                <span style="color: var(--success); font-weight: 600; font-size: 0.85rem;">● Ativo</span>
+              {% else %}
+                <span style="color: var(--muted); font-weight: 600; font-size: 0.85rem;">○ Inativo</span>
+              {% endif %}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <a href="{{ url_for('admin.produto_editar', produto_id=prod.id) }}" class="btn btn-outline btn-sm">
+                  Editar
+                </a>
+                
+                <form method="POST" action="{{ url_for('admin.produto_status', produto_id=prod.id) }}" style="display: inline;">
+                  <button type="submit" class="btn btn-outline btn-sm" title="Alternar status ativo/inativo">
+                    {% if prod.ativo %}Desativar{% else %}Ativar{% endif %}
+                  </button>
+                </form>
+
+                <form method="POST" action="{{ url_for('admin.produto_excluir', produto_id=prod.id) }}" style="display: inline;" onsubmit="return confirm('Deseja realmente desativar ou excluir este produto?');">
+                  <button type="submit" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FFCDD2;">
+                    Excluir
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 40px; color: var(--muted);">
+              Nenhum produto cadastrado ainda.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Gerenciamento de Pedidos - Casa de Bolos Admin{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h1 style="font-size: 1.6rem; margin-bottom: 4px;">Gerenciamento de Pedidos</h1>
+      <p style="color: var(--muted); font-size: 0.9rem;">
+        Controle o fluxo da cozinha e expedição de pedidos da confeitaria.
+      </p>
+    </div>
+  </div>
+
+  <!-- Filtros de Status -->
+  <div class="categories-bar" style="background: var(--surface); padding: 8px 12px; border-radius: var(--radius); border: 1px solid var(--border);">
+    <a href="{{ url_for('admin.pedidos', status='TODOS') }}" 
+       class="cat-chip {% if status_atual == 'TODOS' %}active{% endif %}">
+      Todos
+    </a>
+    <a href="{{ url_for('admin.pedidos', status='NOVO') }}" 
+       class="cat-chip {% if status_atual == 'NOVO' %}active{% endif %}">
+      Novos
+    </a>
+    <a href="{{ url_for('admin.pedidos', status='CONFIRMADO') }}" 
+       class="cat-chip {% if status_atual == 'CONFIRMADO' %}active{% endif %}">
+      Confirmados
+    </a>
+    <a href="{{ url_for('admin.pedidos', status='EM PREPARO') }}" 
+       class="cat-chip {% if status_atual == 'EM PREPARO' %}active{% endif %}">
+      Em Preparo
+    </a>
+    <a href="{{ url_for('admin.pedidos', status='PRONTO') }}" 
+       class="cat-chip {% if status_atual == 'PRONTO' %}active{% endif %}">
+      Prontos
+    </a>
+    <a href="{{ url_for('admin.pedidos', status='SAIU PARA ENTREGA') }}" 
+       class="cat-chip {% if status_atual == 'SAIU PARA ENTREGA' %}active{% endif %}">
+      Saiu p/ Entrega
+    </a>
+    <a href="{{ url_for('admin.pedidos', status='ENTREGUE') }}" 
+       class="cat-chip {% if status_atual == 'ENTREGUE' %}active{% endif %}">
+      Entregues / Retirados
+    </a>
+  </div>
+</div>
+
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Telefone</th>
+          <th>Tipo</th>
+          <th>Itens</th>
+          <th>Total</th>
+          <th>Data/Hora</th>
+          <th>Status</th>
+          <th style="text-align: right;">Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pedidos %}
+          <tr>
+            <td><strong>#{{ p.id }}</strong></td>
+            <td style="font-weight: 600;">{{ p.cliente_nome }}</td>
+            <td style="font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums;">{{ p.cliente_telefone }}</td>
+            <td>
+              {% if p.tipo_entrega == 'entrega' %}
+                <span style="font-size: 0.85rem;">🛵 Entrega</span>
+              {% else %}
+                <span style="font-size: 0.85rem;">🏪 Retirada</span>
+              {% endif %}
+            </td>
+            <td>{{ p.total_itens }} item(ns)</td>
+            <td style="font-weight: 700; color: var(--primary);">{{ p.total|moeda }}</td>
+            <td style="font-size: 0.82rem; color: var(--muted);">
+              {{ p.created_at }}
+            </td>
+            <td>
+              <span class="badge-status status-{{ p.status.replace(' ', '-') }}">
+                {{ p.status }}
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <a href="{{ url_for('admin.pedido_detalhe', pedido_id=p.id) }}" class="btn btn-outline btn-sm">
+                Gerenciar
+              </a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 40px; color: var(--muted);">
+              Nenhum pedido encontrado com o filtro selecionado.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

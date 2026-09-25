@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu Carrinho - Casa de Bolos{% endblock %}
+
+{% block content %}
+<div style="max-width: 680px; margin: 10px auto 40px auto;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+    <h1 style="font-size: 1.6rem;">Seu Carrinho</h1>
+    <a href="{{ url_for('catalogo.listar') }}" style="font-size: 0.88rem; color: var(--primary); text-decoration: underline;">
+      + Adicionar mais bolos
+    </a>
+  </div>
+
+  {% if carrinho %}
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">
+        Itens selecionados
+      </div>
+
+      <div style="divide-y: 1px solid var(--border);">
+        {% for item in carrinho %}
+          <div style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+              <div>
+                <h3 style="font-size: 1.05rem; font-weight: 600; color: var(--text);">
+                  {{ item.nome }}
+                </h3>
+                <span style="font-size: 0.85rem; color: var(--muted);">
+                  Preço unitário: {{ item.preco_unitario|moeda }}
+                </span>
+                {% if item.observacao %}
+                  <p style="font-size: 0.8rem; color: var(--accent); margin-top: 4px; font-style: italic;">
+                    Obs: "{{ item.observacao }}"
+                  </p>
+                {% endif %}
+              </div>
+              <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary); text-align: right; white-space: nowrap;">
+                {{ item.subtotal|moeda }}
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 4px;">
+              <!-- Controle de Quantidade -->
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <form method="POST" action="{{ url_for('pedido.atualizar_carrinho') }}" style="display: inline;">
+                  <input type="hidden" name="index" value="{{ loop.index0 }}">
+                  <input type="hidden" name="acao" value="menos">
+                  <button type="submit" class="btn btn-outline btn-sm" style="width: 32px; height: 32px; padding: 0;">-</button>
+                </form>
+
+                <span style="font-size: 0.95rem; font-weight: 700; min-width: 28px; text-align: center;">
+                  {{ item.quantidade }}
+                </span>
+
+                <form method="POST" action="{{ url_for('pedido.atualizar_carrinho') }}" style="display: inline;">
+                  <input type="hidden" name="index" value="{{ loop.index0 }}">
+                  <input type="hidden" name="acao" value="mais">
+                  <button type="submit" class="btn btn-outline btn-sm" style="width: 32px; height: 32px; padding: 0;">+</button>
+                </form>
+              </div>
+
+              <!-- Remover item -->
+              <form method="POST" action="{{ url_for('pedido.atualizar_carrinho') }}" style="display: inline;">
+                <input type="hidden" name="index" value="{{ loop.index0 }}">
+                <input type="hidden" name="acao" value="remover">
+                <button type="submit" style="background: none; border: none; color: var(--danger); font-size: 0.82rem; cursor: pointer; text-decoration: underline;">
+                  Remover
+                </button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Resumo Financeiro -->
+      <div style="padding: 20px; background: var(--surface-alt);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
+          <span style="color: var(--muted);">Subtotal dos itens</span>
+          <span style="font-weight: 600;">{{ subtotal|moeda }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem;">
+          <span style="color: var(--muted);">Recebimento</span>
+          <span style="font-size: 0.85rem; color: var(--muted);">Definido na próxima etapa</span>
+        </div>
+        <div style="border-top: 1px solid var(--border); padding-top: 12px; display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; color: var(--text);">
+          <span>Total preliminar</span>
+          <span style="color: var(--primary);">{{ total|moeda }}</span>
+        </div>
+      </div>
+    </div>
+
+    <a href="{{ url_for('pedido.entrega') }}" class="btn btn-primary btn-block" style="padding: 16px; font-size: 1.05rem;">
+      Continuar para forma de recebimento →
+    </a>
+
+  {% else %}
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 48px 20px; text-align: center;">
+      <span style="font-size: 3rem; display: block; margin-bottom: 12px;">🧺</span>
+      <h2 style="font-size: 1.3rem; margin-bottom: 8px;">Seu carrinho está vazio</h2>
+      <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 24px;">
+        Que tal escolher um bolo quentinho feito com amor?
+      </p>
+      <a href="{{ url_for('catalogo.listar') }}" class="btn btn-primary">
+        Ver nosso cardápio
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

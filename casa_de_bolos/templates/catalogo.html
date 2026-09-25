@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Cardápio de Bolos Artesanais - Casa de Bolos{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px;">
+    <h1 style="font-size: 1.8rem; letter-spacing: -0.01em;">Nosso Cardápio</h1>
+    <p style="color: var(--muted); font-size: 0.95rem;">
+      Escolha suas delícias artesanais favoritas preparadas com ingredientes nobres.
+    </p>
+  </div>
+
+  <!-- Barra de Categorias Horizontal (Mobile-first scroll) -->
+  <div class="categories-bar">
+    <a href="{{ url_for('catalogo.listar') }}" 
+       class="cat-chip {% if not categoria_ativa %}active{% endif %}">
+      ⭐ Todos os Produtos
+    </a>
+    {% for cat in categorias %}
+      <a href="{{ url_for('catalogo.listar', categoria=cat.id) }}" 
+         class="cat-chip {% if categoria_ativa == cat.id %}active{% endif %}">
+        {{ cat.nome }}
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Grid de Produtos -->
+<div class="products-grid">
+  {% for prod in produtos %}
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img src="{{ prod.imagem or url_for('static', filename='uploads/bolo_placeholder.jpg') }}" 
+             alt="{{ prod.nome }}" 
+             class="product-img" 
+             loading="lazy"
+             onerror="this.src='/static/uploads/bolo_placeholder.jpg';">
+        {% if prod.destaque %}
+          <span style="position: absolute; top: 10px; left: 10px; background: rgba(45,36,30,0.85); color: #FFF; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em;">
+            Mais Pedido
+          </span>
+        {% endif %}
+      </div>
+
+      <div class="product-info">
+        <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 4px;">
+          {{ prod.categoria_nome }}
+        </span>
+        <h2 class="product-title">{{ prod.nome }}</h2>
+        <p class="product-desc">{{ prod.descricao }}</p>
+
+        <div class="product-footer">
+          <div class="product-price">
+            {{ prod.preco|moeda }}
+          </div>
+          <a href="{{ url_for('catalogo.detalhe', produto_id=prod.id) }}" class="btn btn-primary btn-sm">
+            Adicionar +
+          </a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius);">
+      <p style="font-size: 1.1rem; color: var(--muted); margin-bottom: 12px;">Nenhum produto encontrado nesta categoria no momento.</p>
+      <a href="{{ url_for('catalogo.listar') }}" class="btn btn-outline btn-sm">Ver todos os produtos</a>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Barra fixa no rodapé mobile para ir ao carrinho quando houver itens -->
+{% set carrinho = session.get('carrinho', []) %}
+{% if carrinho %}
+  <div style="position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 50; max-width: 460px; margin: 0 auto;">
+    <a href="{{ url_for('pedido.ver_carrinho') }}" 
+       class="btn btn-primary btn-block" 
+       style="box-shadow: 0 8px 24px rgba(140, 72, 42, 0.4); padding: 16px 20px; font-size: 1rem; border-radius: var(--radius-lg); justify-content: space-between;">
+      <span style="display: flex; align-items: center; gap: 8px;">
+        🛒 <span>Ver Carrinho ({{ total_itens_carrinho }})</span>
+      </span>
+      <span>Avançar →</span>
+    </a>
+  </div>
+{% endif %}
+{% endblock %}

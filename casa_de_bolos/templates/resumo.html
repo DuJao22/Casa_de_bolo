@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Resumo do Pedido - Casa de Bolos{% endblock %}
+
+{% block content %}
+<div style="max-width: 620px; margin: 10px auto 40px auto;">
+  <a href="{{ url_for('pedido.entrega') }}" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); margin-bottom: 16px;">
+    ← Alterar recebimento
+  </a>
+
+  <div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.6rem; margin-bottom: 6px;">Resumo do seu Pedido</h1>
+    <p style="color: var(--muted); font-size: 0.95rem;">
+      Por favor, confira os dados abaixo antes de confirmar o pedido.
+    </p>
+  </div>
+
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+    
+    <!-- Seção do Cliente -->
+    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border);">
+      <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: 0.05em; display: block; margin-bottom: 6px;">
+        Identificação do Cliente
+      </span>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <strong style="font-size: 1rem; color: var(--text);">{{ cliente.nome }}</strong>
+          <div style="font-size: 0.88rem; color: var(--muted); font-variant-numeric: tabular-nums;">
+            {{ cliente.telefone }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Recebimento -->
+    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--surface-alt);">
+      <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: 0.05em; display: block; margin-bottom: 6px;">
+        Forma de Recebimento
+      </span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-weight: 700; color: var(--primary);">
+          {% if tipo_entrega == 'entrega' %}🛵 Receber em Casa (Entrega){% else %}🏪 Retirada no Balcão da Loja{% endif %}
+        </span>
+      </div>
+      {% if tipo_entrega == 'entrega' %}
+        <p style="font-size: 0.88rem; color: var(--text); margin-top: 6px;">
+          📍 {{ endereco_entrega }}
+        </p>
+      {% else %}
+        <p style="font-size: 0.85rem; color: var(--muted); margin-top: 4px;">
+          Endereço para retirada: {{ loja_endereco }}
+        </p>
+      {% endif %}
+    </div>
+
+    <!-- Itens do Pedido -->
+    <div style="padding: 20px;">
+      <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: 0.05em; display: block; margin-bottom: 12px;">
+        Itens do Pedido
+      </span>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for item in carrinho %}
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-weight: 600; font-size: 0.95rem;">
+                {{ item.quantidade }}x {{ item.nome }}
+              </div>
+              {% if item.observacao %}
+                <div style="font-size: 0.8rem; color: var(--accent); font-style: italic;">
+                  "{{ item.observacao }}"
+                </div>
+              {% endif %}
+            </div>
+            <div style="font-weight: 600; font-size: 0.95rem; font-variant-numeric: tabular-nums;">
+              {{ item.subtotal|moeda }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Valores Finais -->
+    <div style="padding: 20px; background: var(--surface-alt); border-top: 1px solid var(--border);">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
+        <span style="color: var(--muted);">Subtotal</span>
+        <span>{{ subtotal|moeda }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem;">
+        <span style="color: var(--muted);">Taxa de entrega</span>
+        <span>
+          {% if tipo_entrega == 'entrega' %}
+            {{ taxa_entrega|moeda }}
+          {% else %}
+            <span style="color: var(--success); font-weight: 600;">Grátis</span>
+          {% endif %}
+        </span>
+      </div>
+      <div style="border-top: 1px solid var(--border); padding-top: 12px; display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 700; color: var(--text);">
+        <span>Total a Pagar</span>
+        <span style="color: var(--primary);">{{ total|moeda }}</span>
+      </div>
+    </div>
+  </div>
+
+  <form method="POST" action="{{ url_for('pedido.confirmar') }}">
+    <div class="form-group" style="margin-bottom: 24px;">
+      <label class="form-label" for="observacao_pedido">
+        Observação geral para a confeitaria (opcional)
+      </label>
+      <textarea name="observacao_pedido" 
+                id="observacao_pedido" 
+                rows="2" 
+                class="form-control" 
+                placeholder="Ex: Tocar o interfone 2x, troco para R$ 100, etc."></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block" style="padding: 18px; font-size: 1.1rem; box-shadow: 0 6px 20px rgba(140, 72, 42, 0.25);">
+      Confirmar pedido agora ✓
+    </button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Como receber seu pedido - Casa de Bolos{% endblock %}
+
+{% block content %}
+<div style="max-width: 580px; margin: 10px auto 40px auto;">
+  <a href="{{ url_for('pedido.ver_carrinho') }}" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); margin-bottom: 16px;">
+    ← Voltar ao carrinho
+  </a>
+
+  <div style="margin-bottom: 24px;">
+    <h1 style="font-size: 1.6rem; margin-bottom: 6px;">Como você deseja receber seu pedido?</h1>
+    <p style="color: var(--muted); font-size: 0.95rem;">
+      Selecione entre retirar na nossa loja ou receber no conforto da sua casa.
+    </p>
+  </div>
+
+  <form method="POST" action="{{ url_for('pedido.entrega') }}">
+    
+    <!-- Opções de Recebimento -->
+    <div class="delivery-options">
+      <!-- Retirada -->
+      <label class="delivery-card" for="tipo_entrega_retirada" id="card_retirada">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <input type="radio" 
+                 id="tipo_entrega_retirada" 
+                 name="tipo_entrega" 
+                 value="retirada" 
+                 checked
+                 style="margin-top: 4px;">
+          <div>
+            <div class="delivery-card-title">🏪 Vou retirar na loja</div>
+            <div class="delivery-card-desc">Sem taxa de entrega · Pedido fica pronto quentinho no balcão</div>
+            <div style="margin-top: 8px; font-size: 0.8rem; color: var(--primary); font-weight: 600;">
+              Grátis
+            </div>
+          </div>
+        </div>
+      </label>
+
+      <!-- Entrega -->
+      <label class="delivery-card" for="tipo_entrega_entrega" id="card_entrega">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <input type="radio" 
+                 id="tipo_entrega_entrega" 
+                 name="tipo_entrega" 
+                 value="entrega" 
+                 {% if tipo_selecionado == 'entrega' %}checked{% endif %}
+                 style="margin-top: 4px;">
+          <div>
+            <div class="delivery-card-title">🛵 Quero receber em casa</div>
+            <div class="delivery-card-desc">Entregamos com cuidado na sua porta</div>
+            <div style="margin-top: 8px; font-size: 0.8rem; color: var(--primary); font-weight: 600;">
+              Taxa fixa: {{ taxa_entrega|moeda }}
+            </div>
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <!-- Box de Endereço (exibido apenas quando selecionado Entrega) -->
+    <div id="box-endereco-entrega" style="display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+      <h3 style="font-size: 1.1rem; margin-bottom: 16px;">Endereço de Entrega</h3>
+      
+      <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label class="form-label" for="endereco">Rua / Avenida *</label>
+          <input type="text" id="endereco" name="endereco" class="form-control" placeholder="Ex: Rua das Flores" value="{{ cliente.endereco or '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="numero">Número *</label>
+          <input type="text" id="numero" name="numero" class="form-control" placeholder="123" value="{{ cliente.numero or '' }}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="complemento">Complemento (opcional)</label>
+        <input type="text" id="complemento" name="complemento" class="form-control" placeholder="Apto 12, Bloco B" value="{{ cliente.complemento or '' }}">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label class="form-label" for="bairro">Bairro *</label>
+          <input type="text" id="bairro" name="bairro" class="form-control" placeholder="Centro" value="{{ cliente.bairro or '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cidade">Cidade *</label>
+          <input type="text" id="cidade" name="cidade" class="form-control" placeholder="São Paulo" value="{{ cliente.cidade or 'São Paulo' }}">
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block" style="padding: 16px; font-size: 1.05rem;">
+      Revisar resumo do pedido →
+    </button>
+  </form>
+</div>
+{% endblock %}

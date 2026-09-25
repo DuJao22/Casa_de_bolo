@@ -1,0 +1,8 @@
+{
+  "name": "Casa de Bolos - Atendimento e Pedidos",
+  "description": "Plataforma profissional de atendimento online, cardápio digital e gerenciamento de pedidos para confeitaria artesanal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

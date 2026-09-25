@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Pedido #{{ pedido.id }} Confirmado! - Casa de Bolos{% endblock %}
+
+{% block content %}
+<div style="max-width: 580px; margin: 20px auto 50px auto; text-align: center;">
+  
+  <div style="width: 72px; height: 72px; background: #EDF7ED; color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 16px auto;">
+    ✓
+  </div>
+
+  <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); font-weight: 700;">
+    Sucesso
+  </span>
+  <h1 style="font-size: 2rem; margin-top: 4px; margin-bottom: 8px;">Pedido Recebido!</h1>
+  <p style="color: var(--muted); font-size: 1rem; margin-bottom: 28px;">
+    Obrigado por escolher a Casa de Bolos. Já começamos a cuidar do seu pedido com muito carinho.
+  </p>
+
+  <!-- Card do Pedido -->
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: left; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px;">
+      <div>
+        <span style="font-size: 0.8rem; color: var(--muted); display: block;">Número do Pedido</span>
+        <strong style="font-size: 1.4rem; color: var(--primary);">#{{ pedido.id }}</strong>
+      </div>
+      <div style="text-align: right;">
+        <span style="font-size: 0.8rem; color: var(--muted); display: block;">Status Atual</span>
+        <span style="background: var(--primary-light); color: var(--primary); font-weight: 700; font-size: 0.85rem; padding: 4px 10px; border-radius: 4px;">
+          {{ pedido.status }}
+        </span>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 16px; font-size: 0.95rem;">
+      <div style="color: var(--muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Forma de Recebimento</div>
+      <div style="font-weight: 600;">
+        {% if pedido.tipo_entrega == 'entrega' %}
+          🛵 Entrega em Domicílio
+        {% else %}
+          🏪 Retirada no Balcão
+        {% endif %}
+      </div>
+      <div style="font-size: 0.88rem; color: var(--muted); margin-top: 2px;">
+        {{ pedido.endereco_entrega }}
+      </div>
+    </div>
+
+    <!-- Itens -->
+    <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-bottom: 16px;">
+      <div style="color: var(--muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Itens Solicitados</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        {% for item in pedido.itens %}
+          <div style="display: flex; justify-content: space-between; font-size: 0.95rem;">
+            <span>{{ item.quantidade }}x {{ item.produto_nome }}</span>
+            <span style="font-weight: 600;">{{ item.subtotal|moeda }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Total -->
+    <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: space-between; align-items: baseline;">
+      <span style="font-size: 1rem; font-weight: 600;">Total</span>
+      <span style="font-size: 1.4rem; font-weight: 700; color: var(--primary);">
+        {{ pedido.total|moeda }}
+      </span>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <!-- Botão WhatsApp com mensagem pré-formatada -->
+    <a href="https://wa.me/?text=Ol%C3%A1%2C%20acabei%20de%20fazer%20o%20Pedido%20%23{{ pedido.id }}%20na%20Casa%20de%20Bolos%20no%20valor%20de%20{{ pedido.total|moeda }}!" 
+       target="_blank" 
+       class="btn btn-outline" 
+       style="border-color: #25D366; color: #1E7E34; font-weight: 600;">
+      📱 Compartilhar no WhatsApp
+    </a>
+
+    <a href="{{ url_for('catalogo.listar') }}" class="btn btn-primary">
+      Fazer outro pedido
+    </a>
+  </div>
+</div>
+{% endblock %}

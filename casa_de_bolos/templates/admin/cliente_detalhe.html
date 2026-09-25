@@ -1,0 +1,80 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Histórico de {{ cliente.nome }} - Casa de Bolos Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <a href="{{ url_for('admin.clientes') }}" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); margin-bottom: 16px;">
+    ← Voltar para lista de clientes
+  </a>
+
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h1 style="font-size: 1.5rem; margin-bottom: 4px;">{{ cliente.nome }}</h1>
+        <p style="font-size: 1rem; color: var(--primary); font-weight: 600; font-variant-numeric: tabular-nums;">
+          📞 {{ cliente.telefone }}
+        </p>
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--muted); text-align: right;">
+        Cadastrado em: {{ cliente.created_at }}
+      </div>
+    </div>
+
+    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.9rem;">
+      <strong>Endereço Padrão:</strong>
+      <p style="color: var(--muted); margin-top: 2px;">
+        {% if cliente.endereco %}
+          {{ cliente.endereco }}, {{ cliente.numero }} {% if cliente.complemento %}({{ cliente.complemento }}){% endif %} - {{ cliente.bairro }}, {{ cliente.cidade }}
+        {% else %}
+          Nenhum endereço salvo.
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <h2 style="font-size: 1.2rem; margin-bottom: 12px;">Histórico de Pedidos</h2>
+
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Data</th>
+          <th>Tipo</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th style="text-align: right;">Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pedidos %}
+          <tr>
+            <td><strong>#{{ p.id }}</strong></td>
+            <td style="font-size: 0.85rem; color: var(--muted);">{{ p.created_at }}</td>
+            <td>{% if p.tipo_entrega == 'entrega' %}🛵 Entrega{% else %}🏪 Retirada{% endif %}</td>
+            <td style="font-weight: 700; color: var(--primary);">{{ p.total|moeda }}</td>
+            <td>
+              <span class="badge-status status-{{ p.status.replace(' ', '-') }}">
+                {{ p.status }}
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <a href="{{ url_for('admin.pedido_detalhe', pedido_id=p.id) }}" class="btn btn-outline btn-sm">
+                Ver
+              </a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 32px; color: var(--muted);">
+              Este cliente ainda não realizou pedidos.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

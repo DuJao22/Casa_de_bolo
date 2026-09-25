@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Identificação - Casa de Bolos{% endblock %}
+
+{% block content %}
+<div style="max-width: 440px; margin: 30px auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px 24px; box-shadow: var(--shadow-sm);">
+  
+  <div style="text-align: center; margin-bottom: 28px;">
+    <span style="font-size: 2rem; display: block; margin-bottom: 8px;">🍰</span>
+    <h1 style="font-size: 1.5rem; margin-bottom: 8px;">Vamos começar seu pedido</h1>
+    <p style="font-size: 0.9rem; color: var(--muted);">
+      Digite seu WhatsApp ou celular para identificarmos seu cadastro.
+    </p>
+  </div>
+
+  <form method="POST" action="{{ url_for('cliente.identificacao') }}">
+    <div class="form-group">
+      <label class="form-label" for="telefone">Seu telefone / WhatsApp</label>
+      <input type="tel" 
+             id="telefone" 
+             name="telefone" 
+             class="form-control js-phone-mask" 
+             placeholder="(11) 98765-4321" 
+             required 
+             autofocus 
+             autocomplete="tel"
+             style="font-size: 1.1rem; padding: 14px; text-align: center; font-variant-numeric: tabular-nums;">
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block" style="padding: 14px; font-size: 1rem; margin-top: 20px;">
+      Continuar para o cardápio →
+    </button>
+  </form>
+
+  <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
+    <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 10px;">
+      É a sua primeira vez por aqui?
+    </p>
+    <a href="{{ url_for('cliente.cadastro') }}" class="btn btn-outline btn-block btn-sm">
+      Criar novo cadastro direto
+    </a>
+  </div>
+</div>
+{% endblock %}
