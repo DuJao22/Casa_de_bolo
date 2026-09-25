@@ -21,6 +21,7 @@ import {
   INITIAL_REVIEWS,
   INITIAL_NOTIFICATIONS
 } from '../data/seed';
+import { formatCurrency } from '../utils/format';
 
 // Audio chime helper using Web Audio API
 const tocarSomNotificacao = () => {
@@ -104,25 +105,59 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Config
   const [config, setConfig] = useState<LojaConfig>(() => {
     const saved = localStorage.getItem('cdb_config');
-    return saved ? JSON.parse(saved) : INITIAL_CONFIG;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed.taxa_entrega === 'number') {
+          return { ...INITIAL_CONFIG, ...parsed };
+        }
+      } catch {
+        // fallback
+      }
+    }
+    return INITIAL_CONFIG;
   });
 
   // Categorias
   const [categorias, setCategorias] = useState<Categoria[]>(() => {
     const saved = localStorage.getItem('cdb_categorias');
-    return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch {
+        // fallback
+      }
+    }
+    return INITIAL_CATEGORIES;
   });
 
   // Produtos
   const [produtos, setProdutos] = useState<Produto[]>(() => {
     const saved = localStorage.getItem('cdb_produtos');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch {
+        // fallback
+      }
+    }
+    return INITIAL_PRODUCTS;
   });
 
   // Clientes
   const [clientes, setClientes] = useState<Cliente[]>(() => {
     const saved = localStorage.getItem('cdb_clientes');
-    return saved ? JSON.parse(saved) : INITIAL_CUSTOMERS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch {
+        // fallback
+      }
+    }
+    return INITIAL_CUSTOMERS;
   });
 
   // Cliente Atual na sessão com auto-preenchimento inicial para Render
@@ -140,13 +175,29 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return INITIAL_CUSTOMERS[0];
   });
 
-  // Carrinho com auto-preenchimento inicial
+  // Carrinho com auto-preenchimento inicial e sanitização contra dados corrompidos
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>(() => {
     const saved = localStorage.getItem('cdb_carrinho');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const sanitized: ItemCarrinho[] = parsed.map((item: any) => {
+            const prod = item.produto || INITIAL_PRODUCTS.find(p => p.id === item.produto_id) || INITIAL_PRODUCTS[0];
+            const preco = Number(item.preco_unitario ?? prod?.preco ?? 0);
+            const qtd = Math.max(1, Number(item.quantidade ?? 1));
+            return {
+              produto_id: item.produto_id ?? prod?.id ?? 1,
+              nome: item.nome ?? prod?.nome ?? 'Bolo Artesanal',
+              preco_unitario: preco,
+              quantidade: qtd,
+              subtotal: Number(item.subtotal ?? (preco * qtd)),
+              observacao: item.observacao ?? '',
+              imagem: item.imagem ?? prod?.imagem ?? ''
+            };
+          });
+          return sanitized;
+        }
       } catch {
         // fallback
       }
@@ -154,13 +205,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Preenchimento automático inicial com itens da confeitaria
     return [
       {
-        produto: INITIAL_PRODUCTS[0],
+        produto_id: INITIAL_PRODUCTS[0].id,
+        nome: INITIAL_PRODUCTS[0].nome,
+        preco_unitario: INITIAL_PRODUCTS[0].preco,
         quantidade: 1,
+        subtotal: INITIAL_PRODUCTS[0].preco,
+        imagem: INITIAL_PRODUCTS[0].imagem,
         observacao: 'Massa macia e calda de brigadeiro quentinha'
       },
       {
-        produto: INITIAL_PRODUCTS[5],
+        produto_id: INITIAL_PRODUCTS[5].id,
+        nome: INITIAL_PRODUCTS[5].nome,
+        preco_unitario: INITIAL_PRODUCTS[5].preco,
         quantidade: 1,
+        subtotal: INITIAL_PRODUCTS[5].preco,
+        imagem: INITIAL_PRODUCTS[5].imagem,
         observacao: 'Sortidos artesanais'
       }
     ];
@@ -393,8 +452,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       throw new Error('Carrinho vazio.');
     }
 
-    const subtotal = carrinho.reduce((sum, item) => sum + item.subtotal, 0);
-    const taxa = tipoEntrega === 'entrega' ? config.taxa_entrega : 0;
+    const subtotal = carrinho.reduce((sum, item) => sum + (Number(item?.subtotal) || (Number(item?.preco_unitario || 0) * Number(item?.quantidade || 1)) || 0), 0);
+    const taxa = tipoEntrega === 'entrega' ? (Number(config?.taxa_entrega) || 0) : 0;
     const total = Math.round((subtotal + taxa) * 100) / 100;
 
     const nextId = pedidos.length > 0 ? Math.max(...pedidos.map(p => p.id)) + 1 : 1001;
@@ -434,7 +493,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       tipo: 'novo_pedido',
       destinatario: 'admin',
       titulo: `Novo Pedido #${nextId} Recebido! 🍰`,
-      mensagem: `${clienteAtual.nome} realizou um pedido de R$ ${total.toFixed(2).replace('.', ',')} (${novoPedido.itens.length} itens - ${tipoEntrega === 'entrega' ? 'Entrega' : 'Retirada'}).`,
+      mensagem: `${clienteAtual.nome} realizou um pedido de R$ ${formatCurrency(total)} (${novoPedido.itens.length} itens - ${tipoEntrega === 'entrega' ? 'Entrega' : 'Retirada'}).`,
       pedido_id: nextId,
       cliente_id: clienteAtual.id,
       cliente_nome: clienteAtual.nome,

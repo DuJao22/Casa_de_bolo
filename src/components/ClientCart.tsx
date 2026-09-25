@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ArrowLeft } from 'lucide-react';
+import { formatCurrency } from '../utils/format';
 
 export const ClientCart: React.FC = () => {
   const {
@@ -13,8 +14,8 @@ export const ClientCart: React.FC = () => {
     clienteAtual
   } = useStore();
 
-  const subtotal = carrinho.reduce((sum, item) => sum + item.subtotal, 0);
-  const taxaEntrega = tipoEntrega === 'entrega' ? config.taxa_entrega : 0;
+  const subtotal = carrinho.reduce((sum, item) => sum + (Number(item?.subtotal) || (Number(item?.preco_unitario || 0) * Number(item?.quantidade || 1)) || 0), 0);
+  const taxaEntrega = tipoEntrega === 'entrega' ? (Number(config?.taxa_entrega) || 0) : 0;
   const total = subtotal + taxaEntrega;
 
   const handleContinuar = () => {
@@ -96,7 +97,7 @@ export const ClientCart: React.FC = () => {
                     {item.nome}
                   </h3>
                   <div className="text-xs text-[#7E7267] tabular-nums">
-                    Unitário: R$ {item.preco_unitario.toFixed(2).replace('.', ',')}
+                    Unitário: R$ {formatCurrency(item.preco_unitario)}
                   </div>
                   {item.observacao && (
                     <p className="text-[11px] text-[#8C482A] bg-[#FAF0E6] px-2 py-0.5 rounded italic inline-block mt-1">
@@ -132,7 +133,7 @@ export const ClientCart: React.FC = () => {
 
                 <div className="text-right min-w-[70px]">
                   <span className="font-sans font-bold text-base text-[#8C482A] tabular-nums block">
-                    R$ {item.subtotal.toFixed(2).replace('.', ',')}
+                    R$ {formatCurrency(item.subtotal)}
                   </span>
                 </div>
 
@@ -156,14 +157,14 @@ export const ClientCart: React.FC = () => {
           <div className="flex items-center justify-between text-xs sm:text-sm text-[#7E7267]">
             <span>Subtotal dos produtos</span>
             <span className="font-medium text-[#2D241E] tabular-nums">
-              R$ {subtotal.toFixed(2).replace('.', ',')}
+              R$ {formatCurrency(subtotal)}
             </span>
           </div>
 
           <div className="flex items-center justify-between text-xs sm:text-sm text-[#7E7267]">
             <span>Forma de Recebimento</span>
             <span className="text-[11px] font-medium text-[#8C482A]">
-              {tipoEntrega === 'entrega' ? `Entrega (R$ ${taxaEntrega.toFixed(2).replace('.', ',')})` : 'Retirada na loja (Grátis)'}
+              {tipoEntrega === 'entrega' ? `Entrega (R$ ${formatCurrency(taxaEntrega)})` : 'Retirada na loja (Grátis)'}
             </span>
           </div>
 
@@ -172,7 +173,7 @@ export const ClientCart: React.FC = () => {
               Total estimado
             </span>
             <span className="font-sans font-bold text-xl text-[#8C482A] tabular-nums">
-              R$ {total.toFixed(2).replace('.', ',')}
+              R$ {formatCurrency(total)}
             </span>
           </div>
         </div>

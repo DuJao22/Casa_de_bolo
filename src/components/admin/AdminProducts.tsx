@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Produto } from '../../types';
 import { Plus, Edit2, Trash2, Check, X, Star } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
 
 export const AdminProducts: React.FC = () => {
   const {
@@ -129,7 +130,7 @@ export const AdminProducts: React.FC = () => {
                       {cat?.nome || 'Geral'}
                     </td>
                     <td className="py-3.5 px-4 font-sans font-bold text-[#8C482A] tabular-nums">
-                      R$ {prod.preco.toFixed(2).replace('.', ',')}
+                      R$ {formatCurrency(prod.preco)}
                     </td>
                     <td className="py-3.5 px-4">
                       {prod.destaque ? (

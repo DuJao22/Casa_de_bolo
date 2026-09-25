@@ -3,6 +3,7 @@ import { useStore } from '../../context/StoreContext';
 import { Pedido, StatusPedido, Notificacao } from '../../types';
 import { X, Phone, MapPin, MessageSquare, Clock, Filter, MessageCircle, Send } from 'lucide-react';
 import { WhatsAppSMSPreviewModal } from '../WhatsAppSMSPreviewModal';
+import { formatCurrency } from '../../utils/format';
 
 export const AdminOrders: React.FC = () => {
   const { pedidos, atualizarStatusPedido, notificacoes } = useStore();
@@ -119,7 +120,7 @@ export const AdminOrders: React.FC = () => {
                   {p.tipo_entrega === 'entrega' ? '🛵 Entrega' : '🏪 Retirada'} · {p.itens.reduce((sum, i) => sum + i.quantidade, 0)} un
                 </span>
                 <span className="font-sans font-bold text-base text-[#8C482A] tabular-nums">
-                  R$ {p.total.toFixed(2).replace('.', ',')}
+                  R$ {formatCurrency(p.total)}
                 </span>
               </div>
 
@@ -172,7 +173,7 @@ export const AdminOrders: React.FC = () => {
                     {p.itens.reduce((sum, i) => sum + i.quantidade, 0)} un
                   </td>
                   <td className="py-3.5 px-4 font-sans font-bold text-[#2D241E] tabular-nums">
-                    R$ {p.total.toFixed(2).replace('.', ',')}
+                    R$ {formatCurrency(p.total)}
                   </td>
                   <td className="py-3.5 px-4 text-xs text-[#7E7267] tabular-nums">
                     {p.created_at}
@@ -316,7 +317,7 @@ export const AdminOrders: React.FC = () => {
                         )}
                       </div>
                       <span className="font-medium tabular-nums">
-                        R$ {i.subtotal.toFixed(2).replace('.', ',')}
+                        R$ {formatCurrency(i.subtotal)}
                       </span>
                     </div>
                   ))}
@@ -327,16 +328,16 @@ export const AdminOrders: React.FC = () => {
               <div className="pt-3 border-t border-[#E8E2D9] space-y-1 text-xs">
                 <div className="flex justify-between text-[#7E7267]">
                   <span>Subtotal</span>
-                  <span className="tabular-nums">R$ {pedidoSelecionado.subtotal.toFixed(2).replace('.', ',')}</span>
+                  <span className="tabular-nums">R$ {formatCurrency(pedidoSelecionado.subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-[#7E7267]">
                   <span>Taxa de Entrega</span>
-                  <span className="tabular-nums">R$ {pedidoSelecionado.taxa_entrega.toFixed(2).replace('.', ',')}</span>
+                  <span className="tabular-nums">R$ {formatCurrency(pedidoSelecionado.taxa_entrega)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-sm text-[#2D241E] pt-1">
                   <span>Total</span>
                   <span className="text-[#8C482A] text-base tabular-nums">
-                    R$ {pedidoSelecionado.total.toFixed(2).replace('.', ',')}
+                    R$ {formatCurrency(pedidoSelecionado.total)}
                   </span>
                 </div>
               </div>

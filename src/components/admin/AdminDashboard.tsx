@@ -2,19 +2,20 @@ import React from 'react';
 import { useStore } from '../../context/StoreContext';
 import { DollarSign, ShoppingBag, ChefHat, Clock, ArrowRight, Star } from 'lucide-react';
 import { StatusPedido } from '../../types';
+import { formatCurrency, formatRating } from '../../utils/format';
 
 export const AdminDashboard: React.FC<{ onNavigateTab: (tab: string) => void }> = ({ onNavigateTab }) => {
   const { pedidos, atualizarStatusPedido, avaliacoes } = useStore();
 
   const hojeStr = new Date().toISOString().substring(0, 10);
   const pedidosHoje = pedidos.filter(p => p.created_at.startsWith(hojeStr) && p.status !== 'CANCELADO');
-  const faturamentoHoje = pedidosHoje.reduce((sum, p) => sum + p.total, 0);
+  const faturamentoHoje = pedidosHoje.reduce((sum, p) => sum + (Number(p?.total) || 0), 0);
 
   const emPreparo = pedidos.filter(p => p.status === 'EM PREPARO' || p.status === 'CONFIRMADO').length;
   const novosAguardando = pedidos.filter(p => p.status === 'NOVO').length;
 
-  const somaNotas = avaliacoes.reduce((sum, a) => sum + a.nota, 0);
-  const mediaNotas = avaliacoes.length > 0 ? (somaNotas / avaliacoes.length).toFixed(1) : '5.0';
+  const somaNotas = avaliacoes.reduce((sum, a) => sum + (Number(a?.nota) || 5), 0);
+  const mediaNotas = avaliacoes.length > 0 ? formatRating(somaNotas / avaliacoes.length) : '5.0';
   const pendentesMod = avaliacoes.filter(a => a.status === 'pendente').length;
 
   const getStatusBadge = (status: StatusPedido) => {
@@ -55,7 +56,7 @@ export const AdminDashboard: React.FC<{ onNavigateTab: (tab: string) => void }> 
             </div>
           </div>
           <div className="font-sans font-bold text-2xl text-[#8C482A] tabular-nums">
-            R$ {faturamentoHoje.toFixed(2).replace('.', ',')}
+            R$ {formatCurrency(faturamentoHoje)}
           </div>
           <span className="text-[11px] text-[#7E7267] block mt-1">
             {pedidosHoje.length} pedidos hoje
@@ -200,7 +201,7 @@ export const AdminDashboard: React.FC<{ onNavigateTab: (tab: string) => void }> 
                     )}
                   </td>
                   <td className="py-3.5 px-4 font-sans font-bold text-[#2D241E] tabular-nums">
-                    R$ {p.total.toFixed(2).replace('.', ',')}
+                    R$ {formatCurrency(p.total)}
                   </td>
                   <td className="py-3.5 px-4">
                     <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getStatusBadge(p.status)}`}>

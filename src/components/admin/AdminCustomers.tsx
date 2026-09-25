@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Cliente, Pedido } from '../../types';
 import { Phone, MapPin, Calendar, ShoppingBag, X } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
 
 export const AdminCustomers: React.FC = () => {
   const { clientes, pedidos } = useStore();
@@ -64,7 +65,7 @@ export const AdminCustomers: React.FC = () => {
                       {stats.totalPedidos} un
                     </td>
                     <td className="py-3.5 px-4 font-sans font-bold text-[#8C482A] tabular-nums">
-                      R$ {stats.totalGasto.toFixed(2).replace('.', ',')}
+                      R$ {formatCurrency(stats.totalGasto)}
                     </td>
                     <td className="py-3.5 px-4 text-xs text-[#7E7267] tabular-nums">
                       {stats.ultimoPedido}
@@ -139,7 +140,7 @@ export const AdminCustomers: React.FC = () => {
                   </div>
                   <div className="p-3 bg-[#FFFFFF] border border-[#E8E2D9] rounded-xl">
                     <span className="text-[10px] uppercase font-bold text-[#7E7267] block">Total Investido</span>
-                    <span className="font-bold text-lg text-[#8C482A] tabular-nums">R$ {stats.totalGasto.toFixed(2).replace('.', ',')}</span>
+                    <span className="font-bold text-lg text-[#8C482A] tabular-nums">R$ {formatCurrency(stats.totalGasto)}</span>
                   </div>
                 </div>
 
@@ -158,7 +159,7 @@ export const AdminCustomers: React.FC = () => {
                             <span className="text-[11px] text-[#7E7267]">{p.created_at}</span>
                           </div>
                           <div className="text-right">
-                            <span className="font-bold text-[#2D241E] block tabular-nums">R$ {p.total.toFixed(2).replace('.', ',')}</span>
+                            <span className="font-bold text-[#2D241E] block tabular-nums">R$ {formatCurrency(p.total)}</span>
                             <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-white border border-[#E8E2D9]">
                               {p.status}
                             </span>

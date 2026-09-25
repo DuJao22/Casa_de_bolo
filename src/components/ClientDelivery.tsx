@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 import { Store, Bike, ArrowRight, ArrowLeft, MapPin, CheckCircle } from 'lucide-react';
 import { TipoEntrega } from '../types';
+import { formatCurrency } from '../utils/format';
 
 export const ClientDelivery: React.FC = () => {
   const {
@@ -141,7 +142,7 @@ export const ClientDelivery: React.FC = () => {
 
             <div className="mt-4 pt-3 border-t border-[#E8E2D9]/60">
               <span className="text-xs font-bold text-[#8C482A] tabular-nums">
-                Taxa fixa: R$ {config.taxa_entrega.toFixed(2).replace('.', ',')}
+                Taxa fixa: R$ {formatCurrency(config?.taxa_entrega)}
               </span>
               <span className="text-[11px] text-[#7E7267] block mt-1">
                 Entrega rápida na sua região

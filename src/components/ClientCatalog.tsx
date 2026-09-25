@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { Produto } from '../types';
 import { Search, ShoppingBag, Plus, Minus, X, Check, Star, MessageSquare } from 'lucide-react';
+import { formatCurrency, formatRating } from '../utils/format';
 
 export const ClientCatalog: React.FC = () => {
   const {
@@ -60,8 +61,8 @@ export const ClientCatalog: React.FC = () => {
     }, 600);
   };
 
-  const totalItensCarrinho = carrinho.reduce((sum, i) => sum + i.quantidade, 0);
-  const totalValorCarrinho = carrinho.reduce((sum, i) => sum + i.subtotal, 0);
+  const totalItensCarrinho = carrinho.reduce((sum, i) => sum + (Number(i?.quantidade) || 0), 0);
+  const totalValorCarrinho = carrinho.reduce((sum, i) => sum + (Number(i?.subtotal) || (Number(i?.preco_unitario || 0) * Number(i?.quantidade || 1)) || 0), 0);
 
   return (
     <div className="space-y-6 pb-24">
@@ -167,7 +168,7 @@ export const ClientCatalog: React.FC = () => {
                       return (
                         <div className="flex items-center gap-1 text-xs font-bold text-[#2D241E] bg-[#FAF7F2] px-2 py-0.5 rounded border border-[#E8E2D9]">
                           <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                          <span className="tabular-nums">{rating.media.toFixed(1)}</span>
+                          <span className="tabular-nums">{formatRating(rating.media)}</span>
                           <span className="text-[10px] text-[#7E7267] font-normal">({rating.total})</span>
                         </div>
                       );
@@ -189,7 +190,7 @@ export const ClientCatalog: React.FC = () => {
                 {/* Preço e Botão Adicionar */}
                 <div className="mt-4 pt-3 border-t border-[#E8E2D9] flex items-center justify-between">
                   <div className="font-sans font-bold text-[#8C482A] text-lg tabular-nums">
-                    R$ {prod.preco.toFixed(2).replace('.', ',')}
+                    R$ {formatCurrency(prod.preco)}
                   </div>
 
                   <button
@@ -273,7 +274,7 @@ export const ClientCatalog: React.FC = () => {
                   Preço unitário
                 </span>
                 <span className="font-sans font-bold text-[#8C482A] text-xl tabular-nums">
-                  R$ {produtoModal.preco.toFixed(2).replace('.', ',')}
+                  R$ {formatCurrency(produtoModal.preco)}
                 </span>
               </div>
 
@@ -306,7 +307,7 @@ export const ClientCatalog: React.FC = () => {
                   </div>
 
                   <span className="text-xs sm:text-sm text-[#7E7267]">
-                    Subtotal: <strong className="text-[#8C482A] text-base tabular-nums">R$ {(produtoModal.preco * quantidadeModal).toFixed(2).replace('.', ',')}</strong>
+                    Subtotal: <strong className="text-[#8C482A] text-base tabular-nums">R$ {formatCurrency(produtoModal.preco * quantidadeModal)}</strong>
                   </span>
                 </div>
               </div>
@@ -349,7 +350,7 @@ export const ClientCatalog: React.FC = () => {
                           {rating.total > 0 ? (
                             <>
                               <span className="font-sans font-bold text-sm text-[#2D241E] tabular-nums">
-                                {rating.media.toFixed(1)} de 5.0
+                                {formatRating(rating.media)} de 5.0
                               </span>
                               <div className="flex gap-0.5">
                                 {[1, 2, 3, 4, 5].map((s) => (
@@ -453,7 +454,7 @@ export const ClientCatalog: React.FC = () => {
                 ) : (
                   <>
                     <ShoppingBag className="w-5 h-5" />
-                    <span>Adicionar ao pedido · R$ {(produtoModal.preco * quantidadeModal).toFixed(2).replace('.', ',')}</span>
+                    <span>Adicionar ao pedido · R$ {formatCurrency(produtoModal.preco * quantidadeModal)}</span>
                   </>
                 )}
               </button>
@@ -477,7 +478,7 @@ export const ClientCatalog: React.FC = () => {
               <span>Ver Pedido</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-bold tabular-nums">R$ {totalValorCarrinho.toFixed(2).replace('.', ',')}</span>
+              <span className="font-bold tabular-nums">R$ {formatCurrency(totalValorCarrinho)}</span>
               <span className="text-xs bg-white/20 px-2 py-0.5 rounded-lg">Avançar →</span>
             </div>
           </button>

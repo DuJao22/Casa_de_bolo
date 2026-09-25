@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Avaliacao, StatusAvaliacao } from '../../types';
+import { formatRating } from '../../utils/format';
 import {
   Star,
   CheckCircle,
@@ -34,8 +35,8 @@ export const AdminReviews: React.FC = () => {
   const aprovadas = avaliacoes.filter(a => a.status === 'aprovada').length;
   const rejeitadas = avaliacoes.filter(a => a.status === 'rejeitada').length;
 
-  const somaNotas = avaliacoes.reduce((acc, a) => acc + a.nota, 0);
-  const mediaGeral = totalAvaliacoes > 0 ? (somaNotas / totalAvaliacoes).toFixed(1) : '5.0';
+  const somaNotas = avaliacoes.reduce((acc, a) => acc + (Number(a?.nota) || 5), 0);
+  const mediaGeral = totalAvaliacoes > 0 ? formatRating(somaNotas / totalAvaliacoes) : '5.0';
 
   // Filtragem
   const avaliacoesFiltradas = avaliacoes.filter(a => {

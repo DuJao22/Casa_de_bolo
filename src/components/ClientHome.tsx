@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
 import { ArrowRight, Sparkles, Clock, Heart, Award, Star } from 'lucide-react';
+import { formatCurrency, formatRating } from '../utils/format';
 
 export const ClientHome: React.FC = () => {
   const { clienteAtual, setActiveView, produtos, setProdutoModal, obterMediaAvaliacoes, carrinho } = useStore();
@@ -144,7 +145,7 @@ export const ClientHome: React.FC = () => {
                   {total > 0 && (
                     <div className="absolute bottom-2.5 left-2.5 bg-white/95 backdrop-blur-xs px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1 text-[11px] font-bold text-[#2D241E]">
                       <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span>{media.toFixed(1)}</span>
+                      <span>{formatRating(media)}</span>
                       <span className="text-[#7E7267] font-normal">({total})</span>
                     </div>
                   )}
@@ -162,7 +163,7 @@ export const ClientHome: React.FC = () => {
                     <div>
                       <span className="text-[10px] uppercase font-bold text-[#7E7267] block">A partir de</span>
                       <span className="font-sans font-bold text-[#8C482A] text-lg tabular-nums">
-                        R$ {produto.preco.toFixed(2).replace('.', ',')}
+                        R$ {formatCurrency(produto.preco)}
                       </span>
                     </div>
 

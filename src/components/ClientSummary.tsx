@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ArrowLeft, Check, User, Phone, MapPin, Store, Bike, MessageSquare } from 'lucide-react';
+import { formatCurrency } from '../utils/format';
 
 export const ClientSummary: React.FC = () => {
   const {
@@ -16,8 +17,8 @@ export const ClientSummary: React.FC = () => {
   const [observacaoPedido, setObservacaoPedido] = useState('Favor enviar bem embalado com laço comemorativo e pratinhos descartáveis.');
   const [carregando, setCarregando] = useState(false);
 
-  const subtotal = carrinho.reduce((sum, item) => sum + item.subtotal, 0);
-  const taxaEntrega = tipoEntrega === 'entrega' ? config.taxa_entrega : 0;
+  const subtotal = carrinho.reduce((sum, item) => sum + (Number(item?.subtotal) || (Number(item?.preco_unitario || 0) * Number(item?.quantidade || 1)) || 0), 0);
+  const taxaEntrega = tipoEntrega === 'entrega' ? (Number(config?.taxa_entrega) || 0) : 0;
   const total = subtotal + taxaEntrega;
 
   const handleConfirmar = () => {
@@ -130,7 +131,7 @@ export const ClientSummary: React.FC = () => {
                   )}
                 </div>
                 <span className="font-bold text-[#2D241E] tabular-nums whitespace-nowrap">
-                  R$ {item.subtotal.toFixed(2).replace('.', ',')}
+                  R$ {formatCurrency(item.subtotal)}
                 </span>
               </div>
             ))}
@@ -142,14 +143,14 @@ export const ClientSummary: React.FC = () => {
           <div className="flex items-center justify-between text-xs sm:text-sm text-[#7E7267]">
             <span>Subtotal</span>
             <span className="tabular-nums font-medium text-[#2D241E]">
-              R$ {subtotal.toFixed(2).replace('.', ',')}
+              R$ {formatCurrency(subtotal)}
             </span>
           </div>
 
           <div className="flex items-center justify-between text-xs sm:text-sm text-[#7E7267]">
             <span>Taxa de Entrega</span>
             <span className="tabular-nums font-medium text-[#2D241E]">
-              {tipoEntrega === 'entrega' ? `R$ ${taxaEntrega.toFixed(2).replace('.', ',')}` : <span className="text-emerald-700 font-bold">Grátis</span>}
+              {tipoEntrega === 'entrega' ? `R$ ${formatCurrency(taxaEntrega)}` : <span className="text-emerald-700 font-bold">Grátis</span>}
             </span>
           </div>
 
@@ -158,7 +159,7 @@ export const ClientSummary: React.FC = () => {
               Total a pagar
             </span>
             <span className="font-sans font-bold text-2xl text-[#8C482A] tabular-nums">
-              R$ {total.toFixed(2).replace('.', ',')}
+              R$ {formatCurrency(total)}
             </span>
           </div>
         </div>

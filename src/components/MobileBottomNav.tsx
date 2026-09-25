@@ -12,8 +12,8 @@ export const MobileBottomNav: React.FC = () => {
     setPedidoParaAvaliar
   } = useStore();
 
-  const totalItens = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
-  const subtotal = carrinho.reduce((sum, item) => sum + item.subtotal, 0);
+  const totalItens = carrinho.reduce((sum, item) => sum + (Number(item?.quantidade) || 0), 0);
+  const subtotal = carrinho.reduce((sum, item) => sum + (Number(item?.subtotal) || (Number(item?.preco_unitario || 0) * Number(item?.quantidade || 1)) || 0), 0);
 
   // Checa se cliente tem pedido para avaliar
   const pedidosParaAvaliar = clienteAtual ? obterPedidosParaAvaliar(clienteAtual.id) : [];
@@ -78,7 +78,7 @@ export const MobileBottomNav: React.FC = () => {
             )}
           </div>
           <span className="text-[10px] tracking-tight mt-1 leading-none">
-            {totalItens > 0 ? `R$ ${subtotal.toFixed(0)}` : 'Carrinho'}
+            {totalItens > 0 ? `R$ ${Math.round(subtotal || 0)}` : 'Carrinho'}
           </span>
           {(activeView === 'carrinho' || activeView === 'entrega' || activeView === 'resumo') && (
             <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-[#8C482A]" />

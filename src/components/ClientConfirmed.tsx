@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
 import { CheckCircle2, MessageCircle, ArrowRight, Clock, Store, Bike, MapPin, Star, Sparkles } from 'lucide-react';
+import { formatCurrency } from '../utils/format';
 
 export const ClientConfirmed: React.FC = () => {
   const { ultimoPedidoCriado, pedidos, setActiveView, setPedidoParaAvaliar, avaliacoes } = useStore();
@@ -28,7 +29,7 @@ export const ClientConfirmed: React.FC = () => {
     `Acabei de fazer o *Pedido #${p.id}* pelo site.\n\n` +
     `*Cliente:* ${p.cliente_nome}\n` +
     `*Tipo:* ${p.tipo_entrega === 'entrega' ? 'Entrega em domicílio' : 'Retirada no balcão'}\n` +
-    `*Total:* R$ ${p.total.toFixed(2).replace('.', ',')}\n\n` +
+    `*Total:* R$ ${formatCurrency(p.total)}\n\n` +
     `Aguardo a confirmação da confeitaria! Obrigado.`
   );
 
@@ -157,7 +158,7 @@ export const ClientConfirmed: React.FC = () => {
               <div key={item.id} className="flex justify-between text-xs sm:text-sm">
                 <span>{item.quantidade}x {item.produto_nome}</span>
                 <span className="font-semibold text-[#2D241E] tabular-nums">
-                  R$ {item.subtotal.toFixed(2).replace('.', ',')}
+                  R$ {formatCurrency(item.subtotal)}
                 </span>
               </div>
             ))}
@@ -170,7 +171,7 @@ export const ClientConfirmed: React.FC = () => {
             Valor Total
           </span>
           <span className="font-sans font-bold text-2xl text-[#8C482A] tabular-nums">
-            R$ {p.total.toFixed(2).replace('.', ',')}
+            R$ {formatCurrency(p.total)}
           </span>
         </div>
 
