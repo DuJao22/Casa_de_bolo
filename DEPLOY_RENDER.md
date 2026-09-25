@@ -64,6 +64,20 @@ Se preferir configurar o serviço manualmente pelo painel do Render:
 
 ---
 
+## ⚠️ Atenção Importante: Build Command no Render
+
+Se você criou o Web Service manualmente no Render, **não deixe o Build Command apenas como `bun install` ou `npm install`**. 
+
+Configure o **Build Command** como:
+```bash
+npm install && npm run build
+```
+*(ou se estiver usando Bun no Render: `bun install && bun run build`)*
+
+> **Prevenção automática incluída:** Adicionamos o script `"postinstall": "vite build"` no `package.json` e uma rotina de fallback automático no `server.ts`. Assim, mesmo que o Render execute apenas `bun install`, a pasta `dist/` agora será compilada automaticamente!
+
+---
+
 ## 🔍 Testando Localmente a Versão de Produção
 
 Para testar exatamente o mesmo fluxo que o Render executa:

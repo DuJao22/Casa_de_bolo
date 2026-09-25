@@ -1,6 +1,8 @@
 import express from 'express';
 import compression from 'compression';
 import path from 'path';
+import fs from 'fs';
+import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -9,6 +11,22 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = '0.0.0.0';
+
+// Serve static assets from Vite build output with optimal caching
+const distPath = path.resolve(__dirname, 'dist');
+const indexPath = path.resolve(distPath, 'index.html');
+
+// Fallback auto-build: If dist/index.html is missing (e.g. if the deploy command only ran 'bun install' or 'npm install')
+if (!fs.existsSync(indexPath)) {
+  console.log('⚠️ dist/index.html não foi encontrado na inicialização!');
+  console.log('🔨 Executando build de produção automaticamente (vite build)...');
+  try {
+    execSync('npx vite build', { stdio: 'inherit', cwd: __dirname });
+    console.log('✅ Build concluído com sucesso pelo servidor!');
+  } catch (err) {
+    console.error('❌ Falha ao tentar executar vite build automaticamente:', err);
+  }
+}
 
 // Enable gzip/deflate compression for fast asset transfers
 app.use(compression());
@@ -31,6 +49,7 @@ app.get('/api/health', (_req, res) => {
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor(process.uptime()),
     nodeVersion: process.version,
+    distExists: fs.existsSync(indexPath),
     memory: {
       rssMb: Math.round(memory.rss / (1024 * 1024)),
       heapUsedMb: Math.round(memory.heapUsed / (1024 * 1024)),
@@ -38,9 +57,6 @@ app.get('/api/health', (_req, res) => {
     env: process.env.NODE_ENV || 'production',
   });
 });
-
-// Serve static assets from Vite build output with optimal caching
-const distPath = path.resolve(__dirname, 'dist');
 
 // Serve hashed Vite assets with long-term immutable caching
 app.use(
@@ -66,8 +82,28 @@ app.use(
 
 // SPA fallback: All non-API routes serve index.html without caching
 app.get('*', (_req, res) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.sendFile(path.resolve(distPath, 'index.html'));
+  if (fs.existsSync(indexPath)) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.sendFile(indexPath);
+  } else {
+    // If build hasn't completed or failed, provide helpful status
+    res.status(200).send(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Casa de Bolos - Inicializando</title>
+        <meta http-equiv="refresh" content="3">
+      </head>
+      <body style="font-family: system-ui, -apple-system, sans-serif; text-align: center; padding: 48px 20px; background: #FAF7F2; color: #2D241E;">
+        <h1 style="color: #8C482A; margin-bottom: 8px;">🍰 Casa de Bolos</h1>
+        <p style="font-size: 16px; color: #7E7267;">A aplicação está finalizando o build de produção no servidor.</p>
+        <p style="font-size: 13px; color: #9E9185;">Esta página atualizará automaticamente em instantes...</p>
+      </body>
+      </html>
+    `);
+  }
 });
 
 // Start listening
